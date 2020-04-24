@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                             else {
                                 Email=Email.toLowerCase();
                                 AddNewUser();
-                                gotoHomeActivity(Email);
+                                startActivity(new Intent(MainActivity.this, NavigateActivity.class));
                             }
                         }
                     });
@@ -130,11 +130,6 @@ public class MainActivity extends AppCompatActivity {
         customer.setEmail(Email);
         final Long uploadId = MaxId + 1;
         mDatabaseRef.child(String.valueOf(uploadId)).setValue(customer);
-    }
-    private void gotoHomeActivity(String email) {
-        Intent intent=new Intent(MainActivity.this, HomeActivity.class);
-        intent.putExtra("KEY",email);
-        startActivity(intent);
     }
 
 }

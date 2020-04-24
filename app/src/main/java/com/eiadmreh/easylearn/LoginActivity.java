@@ -22,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btnSignIn;
     TextView tvSignUp;
     FirebaseAuth mFirebaseAuth;
+    FirebaseUser mFirebaseUser;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mFirebaseAuth=FirebaseAuth.getInstance();
+        mFirebaseUser=null;
         emailId=(EditText)findViewById(R.id.editText);
         password=(EditText)findViewById(R.id.editText2);
         btnSignIn=(Button)findViewById(R.id.button);
@@ -37,13 +39,13 @@ public class LoginActivity extends AppCompatActivity {
         mAuthStateListener=new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser mFirebaseUser=mFirebaseAuth.getCurrentUser();
-                if(mFirebaseUser!=null){
+                mFirebaseUser=mFirebaseAuth.getCurrentUser();
+              /*  if(mFirebaseUser!=null){
                     Toast.makeText(LoginActivity.this,"You are logged in",Toast.LENGTH_SHORT).show();
                     Intent i=new Intent(LoginActivity.this,HomeActivity.class);
                     startActivity(i);
                 }
-                else
+                else*/
                     Toast.makeText(LoginActivity.this,"Login Please !",Toast.LENGTH_SHORT).show();
             }
         };
@@ -72,7 +74,9 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this,"Login error ! ,Please try again",Toast.LENGTH_SHORT).show();
                                 }
                                 else {
-                                    startActivity(new Intent(LoginActivity.this,HomeActivity.class));
+                                    password.setText("");
+                                    emailId.setText("");
+                                    startActivity(new Intent(LoginActivity.this,NavigateActivity.class));
                                 }
                             }
                         }
