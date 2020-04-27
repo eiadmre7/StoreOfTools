@@ -1,14 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_blue_light">
+    android:orientation="vertical"
+    tools:context=".HomeActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chat Fragment"
-        android:layout_centerInParent="true"
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/common_google_signin_btn_icon_dark_focused"
         />
 
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/layout_Details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:weightSum="4">
+
+        <EditText
+            android:id="@+id/editTextCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter Code"
+            android:inputType="textPersonName"
+            />
+
+        <EditText
+            android:id="@+id/editTextFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter File Name"
+            android:inputType="textPersonName"
+            />
+
+        <EditText
+            android:id="@+id/editTextPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter Price"
+            android:inputType="textPersonName"
+            />
+
+        <EditText
+            android:id="@+id/editTexQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter Quantity"
+            android:inputType="number"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btnShow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="show"/>
+
+        <ImageButton
+            android:id="@+id/btnAdd"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:src="@drawable/add_shopping_cart"
+            android:text="Add To Cart"/>
+
+        <Button
+            android:id="@+id/btnDetails"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:text="Show Cart"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,37 +39,37 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Button btnUpload, btnChooseImage, btnShow;
-    private EditText editTextFileName,editTextprice,editTextcode;
+    private Button btnAdd,  btnShow,btnShowCart;
+    private EditText editTextName,editTextprice,editTextcode,editTextQuntity;
     private ImageView loadedImage;
-    private ArrayList<Tool> mTools;
     private Uri imageUri;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-    private StorageTask storageTask;
-    private long MaxId=0,SerialCode;
+    public static ArrayList<ToolinCart> thisCart;
+    public static double Total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_home );
-        btnChooseImage = (Button) findViewById( R.id.btnChoose );
-        btnUpload = (Button) findViewById( R.id.btnUpload );
-        editTextFileName = (EditText) findViewById( R.id.editTextFileName );
+        btnAdd = (Button) findViewById( R.id.btnAdd );
+        editTextName = (EditText) findViewById( R.id.editTextFileName );
         editTextprice=(EditText)findViewById(R.id.editTextPrice);
         editTextcode=(EditText)findViewById(R.id.editTextCode);
+        editTextQuntity=(EditText)findViewById(R.id.editTexQuantity);
         loadedImage = (ImageView) findViewById( R.id.imgView );
         btnShow = (Button) findViewById( R.id.btnShow );
-        mTools = new ArrayList<Tool>();
+        btnShowCart=(Button)findViewById(R.id.btnDetails);
+        thisCart=new ArrayList<ToolinCart>();
         mStorageRef = FirebaseStorage.getInstance().getReference("Tools");
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Tools");
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                     MaxId=dataSnapshot.getChildrenCount();
-                SerialCode=123000+MaxId+1;
-                editTextcode.setText("Serial Code: "+ String.valueOf(SerialCode));
+                if(dataSnapshot.exists()) {
+                    editTextcode.setText("123001");
+                    ShowSelectedTool();
+                }
             }
 
             @Override
@@ -76,25 +77,6 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
-        btnChooseImage.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editTextcode.setText("Serial Code: "+ String.valueOf(SerialCode));
-                editTextFileName.setText("");
-                editTextprice.setText("");
-                openFileChooser();
-            }
-        } );
-
-        btnUpload.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(storageTask != null && storageTask.isInProgress()){
-                    Toast.makeText( HomeActivity.this,"Please wait until finish uplopad!", Toast.LENGTH_SHORT ).show();
-                }else
-                    uploadFile();
-            }
-        } );
 
         btnShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,74 +84,33 @@ public class HomeActivity extends AppCompatActivity {
                 ShowSelectedTool();
             }
         });
-
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String Name;
+                long Code;
+                double Price;
+                double TotalPrice;
+                int Quantity;
+                Name=editTextName.getText().toString().trim();
+                Code=Long.parseLong(editTextcode.getText().toString().trim());
+                Price=Double.parseDouble(editTextprice.getText().toString().trim());
+                Quantity=Integer.parseInt(editTextQuntity.getText().toString().trim());
+                TotalPrice=Price*Quantity;
+                ToolinCart t=new ToolinCart(Name,Code,Price,Quantity,TotalPrice);
+                thisCart.add(t);
+                Total+=TotalPrice;
+                clear();
+            }
+        });
+        btnShowCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this,DetailsActivity.class));
+            }
+        });
     }
 
-    private void uploadFile() {
-
-        if(imageUri != null ){
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-            final String imagePath = System.currentTimeMillis() +"." + getFileExtension( imageUri );
-            StorageReference fileReference = mStorageRef.child(imagePath);
-            storageTask = fileReference.putFile( imageUri ).addOnSuccessListener( new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    final Tool tool = new Tool( editTextFileName.getText().toString().trim(),SerialCode, Double.parseDouble(editTextprice.getText().toString().trim()) ,imagePath );
-                    final Long uploadId = MaxId+1;
-                    mDatabaseRef.child( String.valueOf(uploadId) ).setValue(tool);
-                    Toast.makeText( HomeActivity.this, "Upload done", Toast.LENGTH_SHORT ).show();
-
-                    mDatabaseRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                Tool tool = postSnapshot.getValue(Tool.class);
-                                mTools.add( tool );
-                            }
-
-                            try {
-
-                                //showing static image (the image at position 0 )
-                                StorageReference islandRef = mStorageRef.child(mTools.get( 0 ).getImageUrl());
-                                final File localFile = File.createTempFile("images", "jpg");
-                                islandRef.getFile(localFile).addOnSuccessListener( new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile( localFile.getAbsolutePath() );
-                                       // loadedImage.setImageBitmap( bitmap );
-                                    }
-                                } );
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    } );
-
-
-                }
-            } ).addOnFailureListener( new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText( HomeActivity.this,e.toString(), Toast.LENGTH_SHORT  ).show();
-
-                }
-
-            } );
-        }else {
-            Toast.makeText( this,"select an image ", Toast.LENGTH_SHORT ).show();
-        }
-
-    }
     private void ShowSelectedTool() {
         final long toolCode= Long.parseLong(editTextcode.getText().toString());
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -181,7 +122,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                         Tool tool = ds.getValue(Tool.class);
-                        editTextFileName.setText(tool.gettName());
+                        editTextName.setText(tool.gettName());
                         editTextprice.setText("" + tool.gettPrice());
 
                        // Toast.makeText(MainActivity.this,"No Tool Found !!!,Try again.",Toast.LENGTH_SHORT).show();
@@ -229,17 +170,6 @@ private String getImageType(String name){
         return type[1];
         }
 
-    private String getFileExtension(Uri uri){
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType( cR.getType( uri ) );
-    }
-    private void openFileChooser() {
-        Intent intent = new Intent(  );
-        intent.setType( "image/*" );
-        intent.setAction( Intent.ACTION_GET_CONTENT );
-        startActivityForResult( intent, PICK_IMAGE_REQUEST );
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult( requestCode, resultCode, data );
@@ -250,6 +180,13 @@ private String getImageType(String name){
 
 
         }
+    }
+
+    public void clear(){
+        editTextName.setText("");
+        editTextcode.setText("");
+        editTextprice.setText("");
+        editTextQuntity.setText("");
     }
 }
 

@@ -34,7 +34,7 @@ public class NavigateActivity extends AppCompatActivity implements NavigationVie
 
         if(savedInstanceState == null){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessageFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_message);
+            navigationView.setCheckedItem(R.id.nav_home);
         }
     }
 
@@ -50,15 +50,16 @@ public class NavigateActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
-            case R.id.nav_message:
+            case R.id.nav_home:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessageFragment()).commit();
                 break;
             case R.id.nav_store:
-                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ToolsFragment()).commit();
-                startActivity(new Intent(NavigateActivity.this,HomeActivity.class));
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ToolsFragment()).commit();
+                //startActivity(new Intent(NavigateActivity.this,HomeActivity.class));
                 break;
             case R.id.nav_profile:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DetailsFragment()).commit();
+                //startActivity(new Intent(NavigateActivity.this,DetailsActivity.class));
                 break;
             case R.id.nav_share:
                 Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
@@ -66,6 +67,10 @@ public class NavigateActivity extends AppCompatActivity implements NavigationVie
             case R.id.nav_send:
                 Toast.makeText(this, "send", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.nav_logout:
+            Toast.makeText(this, "See you..", Toast.LENGTH_SHORT).show();
+            finish();
+            break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

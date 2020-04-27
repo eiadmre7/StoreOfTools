@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                             else {
                                 Email=Email.toLowerCase();
                                 AddNewUser();
-                                startActivity(new Intent(MainActivity.this, NavigateActivity.class));
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
                             }
                         }
                     });

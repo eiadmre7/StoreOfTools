@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_message"
-            android:title="Message"
+        <item android:id="@+id/nav_home"
+            android:title="Home"
             android:icon="@drawable/ic_message" />
         <item android:id="@+id/nav_store"
             android:title="Store"
-            android:icon="@drawable/store" />
+            android:icon="@drawable/ic_store_black" />
         <item android:id="@+id/nav_profile"
-            android:title="Profile"
-            android:icon="@drawable/ic_person" />
+            android:title="My Cart"
+            android:icon="@drawable/store" />
     </group>
 
     <item android:title="Communicate">
@@ -22,6 +22,9 @@
             <item android:id="@+id/nav_send"
                 android:title="Send"
                 android:icon="@drawable/ic_send"/>
+            <item android:id="@+id/nav_logout"
+                android:title="LogOut"
+                android:icon="@drawable/logout"/>
         </menu>
     </item>
 </menu>
